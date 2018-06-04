@@ -10,7 +10,8 @@ int main()
 {
 	Image mau;
 	mau.read_image();
-	mau.negative();
+//	mau.negative();
+	mau.Log_Transformation();
 	mau.write_image();
 	return 0;
 }

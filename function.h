@@ -77,12 +77,14 @@ void Image::negative()
 }
 void Image::Log_Transformation()
 {
-	int i, j;
+	int i, j, c, n;
 	for(i = 0; i < height; ++i)
 	{
 		for(j = 0; j < width; ++j)
 		{
-			pixels[i][j] = log(1 + pixels[i][j]);
+			//n = 1 + pixels[i][j];
+			c= 1;
+			pixels[i][j] = c*(log(1 + pixels[i][j]));
 		}
 	}
 }
