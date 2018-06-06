@@ -2,14 +2,22 @@
 #include<iostream>
 #include<math.h>
 #include<cstring>
+#include <conio.h>
+#include <stdio.h>
+#include <dos.h>
+#include <string.h>
+#include <windows.h>
+#include <mylib.h>
+#include <time.h>
 #include"Config.h"
+#define Round(a)  int(a+0.5)
 using namespace std;
 void Image::read_image()
 {
 	ifstream ifs;
 	char buffer[10000];
 	char *c;
-	int i = 0, j, k;
+	int i, j;
 	ifs.open("mona_lisa.ascii.pgm", ios_base::in);
 	if (ifs.fail()==true)
 		cout<<"Failed to open this file"<<endl;
@@ -35,9 +43,9 @@ void Image::read_image()
 	{
 		ifs.getline(buffer, 10000, '\n');
 		c = &buffer[0];
-		for(k = 0; k < width ; ++k)
+		for(j = 0; j < width ; ++j)
 		{
-			pixels[i][k] = strtol(c, &c, 10);
+			pixels[i][j] = strtol(c, &c, 10);
 		}
 	}
 	ifs.close();
@@ -46,11 +54,11 @@ void Image::write_image()
 {
 	ofstream ofs;
 	int i, j;
-	ofs.open("mona_lisa.ascii.pgm", ios_base::out);
+	ofs.open("result.pgm", ios_base::out);
 	if (ofs.fail()==true)
 		cout<<"Failed to open this file"<<endl;
 	ofs << "P2" << endl;
-	ofs << "# mona_lisa.ascii.pgm" << endl;
+	ofs << "# result_image.pgm" << endl;
 	ofs << width << " " << height << endl;
 	ofs << graylevel << endl;
 	for(i = 0; i < height; ++i)
@@ -64,30 +72,6 @@ void Image::write_image()
 	ofs.close();
 }
 
-void Image::negative()
-{
-	int i, j;
-	for(i = 0; i < height; ++i)
-	{
-		for(j = 0; j < width; ++j)
-		{
-			pixels[i][j] = graylevel - pixels[i][j];
-		}
-	}
-}
-void Image::Log_Transformation()
-{
-	int i, j, c, n;
-	for(i = 0; i < height; ++i)
-	{
-		for(j = 0; j < width; ++j)
-		{
-			//n = 1 + pixels[i][j];
-			c= 1;
-			pixels[i][j] = c*(log(1 + pixels[i][j]));
-		}
-	}
-}
 void Image::setPixels(int **matrix)
 {
 	int i, j;
@@ -96,6 +80,80 @@ void Image::setPixels(int **matrix)
 			pixels[i][j] = matrix[i][j];
 }
 
+void Filter::negative(Image &pic)
+{
+	int i, j, width, height, graylevel;
+	graylevel = pic.getterGrayLevel();
+	width = pic.getterWidth();
+	height = pic.getterHeight();
+	int **matrix = pic.getterPixels();
+	for(i = 0; i < height; ++i)
+		for(j = 0; j < width; ++j)
+			matrix[i][j] = graylevel - matrix[i][j];
+}
+void Filter::Log_Transformation(Image &pic, int c)
+{
+	int i, j, width, height, graylevel;
+	graylevel = pic.getterGrayLevel();
+	width = pic.getterWidth();
+	height = pic.getterHeight();
+	int **matrix = pic.getterPixels();
+	for(i = 0; i < height; ++i)
+		for(j = 0; j < width; ++j)
+			matrix[i][j] =c*Round(log(1 + matrix[i][j]));
+}
+void Filter::Histogram_equalization(Image &pic)
+{
+	int i, j, k, width, height, graylevel;
+	int soluong[graylevel];
+	double number[graylevel];
+	graylevel = pic.getterGrayLevel();
+	width = pic.getterWidth();
+	height = pic.getterHeight();
+	int **matrix = pic.getterPixels();
+	for(k = 0; k <= graylevel; k++)
+	{
+		int count = 0;
+		for(i = 0; i < height; ++i)
+		{
+			for(j = 0; j < width; ++j)
+			{
+				if(matrix[i][j] ==k)
+					count++;
+			}
+				
+		}
+		soluong[k]=count;
+		if(k==0)
+		{
+			number[k]=double (soluong[k])/(height*width);
+		}
+		if(k!=0)
+		{
+			number[k]=double (soluong[k])/(height*width);
+			for(int x = k-1 ;x >= 0; x--)
+			{
+				number[x]=double (soluong[x])/(height*width);
+				number[k]+=number[x];
+			}
+		}
+		
+	}
+	for(k = 0; k <= graylevel; k++)
+	{
+		for(i = 0; i < height; ++i)
+		{
+			for(j = 0; j < width; ++j)
+			{
+				if(matrix[i][j]==k)
+				{
+					matrix[i][j]=Round(graylevel*number[k]);
+				}
+			}
+				
+		}
+	}
+}
 void Delete(int **&ptr)			
 {
 	int i;
@@ -104,14 +162,55 @@ void Delete(int **&ptr)
 	delete ptr;
 }
 
-//void Negative::transform(Image pic)
-//{
-//	int i, j, width, height, graylevel;
-//	graylevel = pic.getterGrayLevel();
-//	width = pic.getterWidth();
-//	height = pic.getterHeight();
-//	int **matrix = pic.getterPixels();
-//	for(i = 0; i < height; ++i)
-//		for(j = 0; j < width; ++j)
-//			matrix[i][j] = graylevel - matrix[i][j];
-//}
+void Normal () {
+	SetColor(15);
+	SetBGColor(0);
+}
+void HighLight () {
+	SetColor(15);
+	SetBGColor(1);
+}
+int MenuDong(char td [so_item][50]){
+  Normal();
+  system("cls");   int chon =0;
+  int i; 
+  for ( i=0; i< so_item ; i++)
+  { gotoxy(cot, dong +i);
+    cout << td[i];
+  }
+  HighLight();
+  gotoxy(cot,dong+chon);
+  cout << td[chon];
+  char kytu;
+do {
+  kytu = getch();
+  if (kytu==0) kytu = getch();
+  switch (kytu) {
+    case Up :if (chon+1 >1)
+  			  {
+  		              	Normal();
+              	gotoxy(cot,dong+chon);
+              	cout << td[chon];
+              	chon --;
+              	HighLight();
+              	gotoxy(cot,dong+chon);
+              	cout << td[chon];
+  				
+  			  }
+  			  break;
+  	case Down :if (chon+1 <so_item)
+  			  {
+  		        Normal();
+              	gotoxy(cot,dong+chon);
+              	cout << td[chon];
+              	chon ++;
+              	HighLight();
+              	gotoxy(cot,dong+chon);
+              	cout << td[chon];
+  				
+  			  }
+  			  break;
+  	case 13 : return chon+1;
+  } 
+  } while (1);
+}
