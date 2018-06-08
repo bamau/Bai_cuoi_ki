@@ -16,7 +16,7 @@ int main()
 	{
 		case 1:
 			{
-				f.negative(mau);
+				f.Negative(mau);
 				break;
 			}
 		case 2:
@@ -34,10 +34,12 @@ int main()
 			}
 		case 4:
 			{
+				f.Smoothing_Linear(mau);
 				break;
 			}
 		case 5:
 			{
+				f.Laplacian(mau);
 				break;
 			}
 	}

@@ -12,6 +12,15 @@
 #include"Config.h"
 #define Round(a)  int(a+0.5)
 using namespace std;
+
+void Delete(int **&ptr);
+void Delete(int **&ptr)			
+{
+	int i;
+	for (i = 0; i < 3; ++i)
+		delete[] ptr[i];
+	delete ptr;
+}
 void Image::read_image()
 {
 	ifstream ifs;
@@ -80,7 +89,7 @@ void Image::setPixels(int **matrix)
 			pixels[i][j] = matrix[i][j];
 }
 
-void Filter::negative(Image &pic)
+void Filter::Negative(Image &pic)
 {
 	int i, j, width, height, graylevel;
 	graylevel = pic.getterGrayLevel();
@@ -104,64 +113,78 @@ void Filter::Log_Transformation(Image &pic, int c)
 }
 void Filter::Histogram_equalization(Image &pic)
 {
-	int i, j, k, width, height, graylevel;
-	int soluong[graylevel];
-	double number[graylevel];
+	int i, j, width, height, graylevel;
+	graylevel = pic.getterGrayLevel();
+	float count[graylevel]={0};
+	width = pic.getterWidth();
+	height = pic.getterHeight();
+	int **matrix = pic.getterPixels();	
+	for(i = 0; i < height; ++i)
+	{
+		for(j = 0; j < width; ++j)
+		{
+			++count[matrix[i][j]];
+		}
+	}	
+	for(i = 0; i<= graylevel;i++)
+	{
+		count[i]=float(count[i])/(height*width);
+		if(i!=0)
+		{
+			count[i]+=count[i-1];
+		}
+	}			
+	for(i = 0; i < height; ++i)
+	{
+		for(j = 0; j < width; ++j)
+		{	
+			matrix[i][j]=Round(graylevel*count[matrix[i][j]]);
+		}	
+	}
+}
+
+void Filter::Smoothing_Linear(Image &pic)
+{
+	int i, j, h, w, graylevel;
 	graylevel = pic.getterGrayLevel();
 	width = pic.getterWidth();
 	height = pic.getterHeight();
+	w=width+2;
+	h=height+2;
+	pixels = new int*[h];
+	for(i = 0;i < h;i++) pixels[i]=new int[w];
 	int **matrix = pic.getterPixels();
-	for(k = 0; k <= graylevel; k++)
+	for(i = 0; i < height; ++i)
 	{
-		int count = 0;
-		for(i = 0; i < height; ++i)
+		j = 0;
+		pixels[i+1][j] = 0;
+		for(; j < width; ++j)
 		{
-			for(j = 0; j < width; ++j)
-			{
-				if(matrix[i][j] ==k)
-					count++;
-			}
-				
+			pixels[i+1][j+1] = matrix[i][j];
+			if(i == 0)
+				pixels[i][j+1] = 0;
+			else if(i == height - 1)
+				pixels[i+2][j+1] = matrix[i][j];
 		}
-		soluong[k]=count;
-		if(k==0)
-		{
-			number[k]=double (soluong[k])/(height*width);
-		}
-		if(k!=0)
-		{
-			number[k]=double (soluong[k])/(height*width);
-			for(int x = k-1 ;x >= 0; x--)
-			{
-				number[x]=double (soluong[x])/(height*width);
-				number[k]+=number[x];
-			}
-		}
-		
+		pixels[i+1][j+1] = 0;
 	}
-	for(k = 0; k <= graylevel; k++)
-	{
-		for(i = 0; i < height; ++i)
-		{
-			for(j = 0; j < width; ++j)
-			{
-				if(matrix[i][j]==k)
-				{
-					matrix[i][j]=Round(graylevel*number[k]);
-				}
-			}
-				
-		}
-	}
+	pixels[0][0] = 0;
+	pixels[0][w-1] = 0;		
+	pixels[h-1][0] = 0;
+	pixels[h-1][w-1] = 0;
+	for(i = 1; i < h-1; ++i)
+		for(j = 1; j < w-1; ++j)
+			matrix[i-1][j-1] = (pixels[i][j] + pixels[i-1][j]+ 
+								pixels[i+1][j] + pixels[i][j+1]+ 
+								pixels[i][j-1] + pixels[i+1][j+1]+ 
+								pixels[i-1][j+1] + pixels[i-1][j-1]+ 
+								pixels[i+1][j-1])/9;
+	Delete(pixels);
 }
-void Delete(int **&ptr)			
+void Filter::Laplacian(Image &pic)
 {
-	int i;
-	for (i = 0; i < 3; ++i)
-		delete[] ptr[i];
-	delete ptr;
+	
 }
-
 void Normal () {
 	SetColor(15);
 	SetBGColor(0);

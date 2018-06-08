@@ -53,16 +53,12 @@ class Filter : Matrix
 				delete[] pixels[i];
 			delete pixels;
 		}
-		void negative(Image &pic);
+		void Negative(Image &pic);
 		void Log_Transformation(Image &pic, int c);
 		void Histogram_equalization(Image &pic);
+		void Smoothing_Linear(Image &pic);
+		void Laplacian(Image &pic);
 };
-
-typedef struct node
-{  int info ;
-    struct node *next ;
-};
-typedef struct node *PTR;
 
 const int so_item = 5;
 const int dong =2;
