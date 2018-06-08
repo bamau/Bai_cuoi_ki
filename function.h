@@ -183,7 +183,37 @@ void Filter::Smoothing_Linear(Image &pic)
 }
 void Filter::Laplacian(Image &pic)
 {
-	
+	int i, j, h, w, graylevel;
+	graylevel = pic.getterGrayLevel();
+	width = pic.getterWidth();
+	height = pic.getterHeight();
+	w=width+2;
+	h=height+2;
+	pixels = new int*[h];
+	for(i = 0;i < h;i++) pixels[i]=new int[w];
+	int **matrix = pic.getterPixels();
+	for(i = 0; i < height; ++i)
+	{
+		j = 0;
+		pixels[i+1][j] = matrix[i][j];
+		for(; j < width; ++j)
+		{
+			pixels[i+1][j+1] = matrix[i][j];
+			if(i == 0)
+				pixels[i][j+1] = matrix[i][j];
+			else if(i == height - 1)
+				pixels[i+2][j+1] = matrix[i][j];
+		}
+		pixels[i+1][j+1] = matrix[i][j-1];
+	}
+	pixels[0][0] = matrix[0][0];
+	pixels[0][w-1] = matrix[0][width-1];		
+	pixels[h-1][0] = matrix[height-1][0];
+	pixels[h-1][w-1] = matrix[height-1][width-1];
+	for(i = 1; i < h-1; ++i)
+		for(j = 1; j < w-1; ++j)
+			matrix[i-1][j-1] = (pixels[i-1][j]+pixels[i+1][j]+ pixels[i][j+1]*(1)+pixels[i][j-1])-4*pixels[i][j];
+	Delete(pixels);
 }
 void Normal () {
 	SetColor(15);
