@@ -1,51 +1,65 @@
 #include<iostream>
 #include<fstream>
 #include<stdlib.h>
-#include<iomanip>
 #include"Config.h"
 #include"function.h"
 using namespace std;
 
 int main()
 {
-	Image mau;
+	Image image;
 	Filter f;
+	char *NameImage=new char[50];	
+	int choice=MenuDong(thucdon);
 	int number;
-	mau.read_image();
-	switch (MenuDong(thucdon))
+	NameImage={"mona_lisa.ascii.pgm"};
+	image.read_image(NameImage);
+	switch (choice)
 	{
 		case 1:
 			{
-				f.Negative(mau);
+				f.Negative(image);
+				system("cls");
+				cout<<"Complete Filter.\n";
 				break;
 			}
 		case 2:
 			{
-				system("cls");
 				cout<<"Input Number Transformation: ";
 				cin>>number;
-				f.Log_Transformation(mau,number);
+				f.Log_Transformation(image,number);
+				system("cls");
+				cout<<"Complete Filter.\n";
 				break;
 			}
 		case 3:
 			{
-				f.Histogram_equalization(mau);
+				f.Histogram_equalization(image);
+				system("cls");
+				cout<<"Complete Filter.\n";
 				break;
 			}
 		case 4:
 			{
-				f.Smoothing_Linear(mau);
+				f.Smoothing_Linear(image);
+				system("cls");
+				cout<<"Complete Filter.\n";
 				break;
 			}
 		case 5:
 			{
-				f.Laplacian(mau);
+				f.Laplacian(image);
+				system("cls");
+				cout<<"Complete Filter.\n";
+				break;
+			}
+		case 6:
+			{
+				system("cls");
 				break;
 			}
 	}
-	mau.write_image();
-	system("cls");
-	cout<<"Complete Filter.\n";
+	image.write_image();
 	return 0;
 }
 

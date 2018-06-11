@@ -13,21 +13,13 @@
 #define Round(a)  int(a+0.5)
 using namespace std;
 
-void Delete(int **&ptr);
-void Delete(int **&ptr)			
-{
-	int i;
-	for (i = 0; i < 3; ++i)
-		delete[] ptr[i];
-	delete ptr;
-}
-void Image::read_image()
+void Image::read_image(char* NameImage)
 {
 	ifstream ifs;
 	char buffer[10000];
 	char *c;
 	int i, j;
-	ifs.open("mona_lisa.ascii.pgm", ios_base::in);
+	ifs.open(NameImage, ios_base::in);
 	if (ifs.fail()==true)
 		cout<<"Failed to open this file"<<endl;
 	ifs.getline(buffer, 100, '\n');
@@ -63,7 +55,7 @@ void Image::write_image()
 {
 	ofstream ofs;
 	int i, j;
-	ofs.open("result.pgm", ios_base::out);
+	ofs.open("Result_Image.pgm", ios_base::out);
 	if (ofs.fail()==true)
 		cout<<"Failed to open this file"<<endl;
 	ofs << "P2" << endl;
@@ -179,7 +171,6 @@ void Filter::Smoothing_Linear(Image &pic)
 								pixels[i][j-1] + pixels[i+1][j+1]+ 
 								pixels[i-1][j+1] + pixels[i-1][j-1]+ 
 								pixels[i+1][j-1])/9;
-	Delete(pixels);
 }
 void Filter::Laplacian(Image &pic)
 {
@@ -211,9 +202,16 @@ void Filter::Laplacian(Image &pic)
 	pixels[h-1][0] = matrix[height-1][0];
 	pixels[h-1][w-1] = matrix[height-1][width-1];
 	for(i = 1; i < h-1; ++i)
+	{
 		for(j = 1; j < w-1; ++j)
-			matrix[i-1][j-1] = (pixels[i-1][j]+pixels[i+1][j]+ pixels[i][j+1]*(1)+pixels[i][j-1])-4*pixels[i][j];
-	Delete(pixels);
+		{
+			matrix[i-1][j-1] = (pixels[i-1][j]+pixels[i+1][j]+ pixels[i][j+1]+pixels[i][j-1])-4*pixels[i][j];
+			if(matrix[i-1][j-1] < 0)
+				matrix[i-1][j-1] = pixels[i][j] - matrix[i-1][j-1];
+			else
+				matrix[i-1][j-1] += pixels[i][j];
+		}
+	}
 }
 void Normal () {
 	SetColor(15);
@@ -225,8 +223,9 @@ void HighLight () {
 }
 int MenuDong(char td [so_item][50]){
   Normal();
-  system("cls");   int chon =0;
-  int i; 
+  system("cls");   
+  cout<<"------------------------------------------------------IMAGE FILTER------------------------------------------------------";
+  int chon =0; int i; 
   for ( i=0; i< so_item ; i++)
   { gotoxy(cot, dong +i);
     cout << td[i];

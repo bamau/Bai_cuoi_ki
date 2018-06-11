@@ -21,14 +21,7 @@ class Image : Matrix
 			height = 0;
 			graylevel = 0;
 		}
-		~Image()
-		{
-			int i;
-			for (i = 0; i < height; ++i)
-				delete[] pixels[i];
-			delete pixels;
-		}
-		void read_image();
+		void read_image(char* NameImage);
 		void write_image();
 		void setPixels(int **matrix);
 		void setPixel(int value, int x, int y)	{pixels[x][y] = value;}
@@ -46,13 +39,6 @@ class Filter : Matrix
 			width = 0;
 			height = 0;
 		}
-		~Filter()
-		{
-			int i;
-			for (i = 0; i < height; ++i)
-				delete[] pixels[i];
-			delete pixels;
-		}
 		void Negative(Image &pic);
 		void Log_Transformation(Image &pic, int c);
 		void Histogram_equalization(Image &pic);
@@ -60,7 +46,7 @@ class Filter : Matrix
 		void Laplacian(Image &pic);
 };
 
-const int so_item = 5;
+const int so_item = 6;
 const int dong =2;
 const int cot = 2 ;
 const int Up = 72;
@@ -70,5 +56,5 @@ char thucdon [so_item][50] = {"1. Negative                 ",
 			                  "3. Histogram Equalization   ",
 			                  "4. Smoothing linear filter  ",
 			                  "5. Laplacian filter         ",
-			                 };
-
+			                  "6. Exit                     ",
+			                  };             
